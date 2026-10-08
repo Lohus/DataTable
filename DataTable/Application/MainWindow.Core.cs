@@ -80,7 +80,7 @@ namespace EngineAnalyzer
         private string xAxisTitle = "IntTempOut, °C";
         private string yAxisTitle = "Power, kW";
 
-        private int pgXTagId = 569;
+        private int pgXTagId = 1280;
         private int pgYTagId = 558;
         private int pgSpeedTagId = 625;
         private bool pgMetricIsDeviation;

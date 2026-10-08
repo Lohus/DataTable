@@ -6,8 +6,8 @@
         xmlns:matrix="clr-namespace:EngineAnalyzer.Views.Matrix"
         xmlns:plot="clr-namespace:EngineAnalyzer.Views.Plot"
         Title="DataTable V.0"
-        Height="950"
-        Width="1650"
+        Height="800"
+        Width="1280"
         MinHeight="700"
         MinWidth="1100"
         WindowStartupLocation="CenterScreen">

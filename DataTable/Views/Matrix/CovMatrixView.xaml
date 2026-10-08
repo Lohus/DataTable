@@ -14,7 +14,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Матрица коэффициента вариации COV, %"
+            <TextBlock Text="COV, %"
                        FontSize="18"
                        FontWeight="Bold"
                        Margin="0,0,0,5"/>
