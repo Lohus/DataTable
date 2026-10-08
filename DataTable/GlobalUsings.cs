@@ -4,6 +4,7 @@ global using OxyPlot;
 global using OxyPlot.Annotations;
 global using OxyPlot.Axes;
 global using OxyPlot.Series;
+global using OxyPlot.Wpf;
 global using System;
 global using System.Collections.Generic;
 global using System.Data;

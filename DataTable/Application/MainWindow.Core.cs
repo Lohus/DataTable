@@ -23,7 +23,7 @@ namespace EngineAnalyzer
         private double nominalRpm = 1500;
         private double maxAllowedDeviation = 1000;
 
-        private const double RedDeviationThreshold = 12;
+        private const double RedDeviationThreshold = 0.8;
         private const int ExcelHeatStyleSteps = 24;
 
         private static readonly CovColorConverter covColorConverter =
@@ -87,6 +87,54 @@ namespace EngineAnalyzer
 
         private readonly PlotModel plotModel =
             new PlotModel();
+
+        // Child-view aliases keep feature code independent from XAML namescopes.
+        private Button OpenCsvButton => ControlPanel.OpenCsvButton;
+        private Button PostgresButton => ControlPanel.PostgresButton;
+        private Button UpdateButton => ControlPanel.UpdateButton;
+
+        private ComboBox CsvDateColumnComboBox => ControlPanel.CsvDateColumnComboBox;
+        private ComboBox CsvXColumnComboBox => ControlPanel.CsvXColumnComboBox;
+        private ComboBox CsvYColumnComboBox => ControlPanel.CsvYColumnComboBox;
+        private ComboBox CsvMetricColumnComboBox => ControlPanel.CsvMetricColumnComboBox;
+        private CheckBox CsvMetricIsDeviationCheckBox => ControlPanel.CsvMetricIsDeviationCheckBox;
+        private CheckBox PgMetricIsDeviationCheckBox => ControlPanel.PgMetricIsDeviationCheckBox;
+
+        private TextBox XAxisTitleTextBox => ControlPanel.XAxisTitleTextBox;
+        private TextBox YAxisTitleTextBox => ControlPanel.YAxisTitleTextBox;
+        private TextBox PgXTagIdTextBox => ControlPanel.PgXTagIdTextBox;
+        private TextBox PgYTagIdTextBox => ControlPanel.PgYTagIdTextBox;
+        private TextBox PgSpeedTagIdTextBox => ControlPanel.PgSpeedTagIdTextBox;
+
+        private TextBox GraphTempMinTextBox => ControlPanel.GraphTempMinTextBox;
+        private TextBox GraphTempMaxTextBox => ControlPanel.GraphTempMaxTextBox;
+        private TextBox GraphTempStepTextBox => ControlPanel.GraphTempStepTextBox;
+        private TextBox GraphPowerMinTextBox => ControlPanel.GraphPowerMinTextBox;
+        private TextBox GraphPowerMaxTextBox => ControlPanel.GraphPowerMaxTextBox;
+        private TextBox GraphPowerStepTextBox => ControlPanel.GraphPowerStepTextBox;
+
+        private TextBox TableTempMinTextBox => ControlPanel.TableTempMinTextBox;
+        private TextBox TableTempMaxTextBox => ControlPanel.TableTempMaxTextBox;
+        private TextBox TableTempStepTextBox => ControlPanel.TableTempStepTextBox;
+        private TextBox TablePowerMinTextBox => ControlPanel.TablePowerMinTextBox;
+        private TextBox TablePowerMaxTextBox => ControlPanel.TablePowerMaxTextBox;
+        private TextBox TablePowerStepTextBox => ControlPanel.TablePowerStepTextBox;
+
+        private TextBox NominalRpmTextBox => ControlPanel.NominalRpmTextBox;
+        private TextBox MaxDeviationTextBox => ControlPanel.MaxDeviationTextBox;
+        private TextBox PgHostTextBox => ControlPanel.PgHostTextBox;
+        private TextBox PgPortTextBox => ControlPanel.PgPortTextBox;
+        private TextBox PgDatabaseTextBox => ControlPanel.PgDatabaseTextBox;
+        private TextBox PgUserTextBox => ControlPanel.PgUserTextBox;
+        private PasswordBox PgPasswordBox => ControlPanel.PgPasswordBox;
+        private TextBox PgFromTextBox => ControlPanel.PgFromTextBox;
+        private TextBox PgToTextBox => ControlPanel.PgToTextBox;
+
+        private PlotView Plot => SurfacePlot.Plot;
+        private DataGrid SurfaceMatrixGrid => MatrixView.SurfaceMatrixGrid;
+        private TextBlock MatrixDescriptionTextBlock => MatrixView.MatrixDescriptionTextBlock;
+        private TextBlock StatusText => StatusPanel.StatusText;
+        private ProgressBar Progress => StatusPanel.Progress;
 
         private sealed class EngineState
         {
@@ -188,9 +236,36 @@ namespace EngineAnalyzer
         {
             InitializeComponent();
 
+            WireUiEvents();
+
             SetupPlot();
 
             ConfigureGrid();
+        }
+
+
+        private void WireUiEvents()
+        {
+            ControlPanel.OpenCsvButton.Click += OpenCsv_Click;
+            ControlPanel.PostgresButton.Click += LoadPostgres_Click;
+            ControlPanel.TestPostgresButton.Click += TestPostgres_Click;
+            ControlPanel.ResetViewButton.Click += ResetView_Click;
+            ControlPanel.UpdateButton.Click += Update_Click;
+            ControlPanel.PrintTableButton.Click += PrintPdf_Click;
+            ControlPanel.PrintGraphButton.Click += PrintGraph_Click;
+            ControlPanel.ExportExcelButton.Click += ExportExcel_Click;
+
+            CsvXColumnComboBox.SelectionChanged +=
+                CsvXColumn_SelectionChanged;
+            CsvYColumnComboBox.SelectionChanged +=
+                CsvYColumn_SelectionChanged;
+            CsvMetricColumnComboBox.SelectionChanged +=
+                CsvMetricColumn_SelectionChanged;
+
+            Plot.PreviewMouseMove += Plot_MouseMove;
+            Plot.PreviewMouseLeftButtonDown += Plot_MouseLeftButtonDown;
+            Plot.PreviewMouseLeftButtonUp += Plot_MouseLeftButtonUp;
+            Plot.PreviewMouseWheel += Plot_MouseWheel;
         }
 
 

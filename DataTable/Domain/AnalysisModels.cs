@@ -149,8 +149,8 @@ namespace EngineAnalyzer
                 double standardDeviation =
                     StandardDeviation;
 
-                // For a perfectly stable zero-deviation cell both μ and σ
-                // are zero. Treat it as 0% variation for display purposes.
+                // If a signal is identically zero, both μ and σ are zero.
+                // Treat that special case as 0% variation for display.
                 if (Math.Abs(mean) < 1e-12)
                 {
                     return standardDeviation < 1e-12

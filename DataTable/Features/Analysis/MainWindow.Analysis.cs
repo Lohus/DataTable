@@ -9,6 +9,7 @@ namespace EngineAnalyzer
         private void ProcessWeightedPoint(
             double temperature,
             double power,
+            double engineSpeed,
             double deviation,
             double durationSeconds,
             long intervalCount)
@@ -17,6 +18,8 @@ namespace EngineAnalyzer
                 double.IsInfinity(temperature) ||
                 double.IsNaN(power) ||
                 double.IsInfinity(power) ||
+                double.IsNaN(engineSpeed) ||
+                double.IsInfinity(engineSpeed) ||
                 double.IsNaN(deviation) ||
                 double.IsInfinity(deviation) ||
                 double.IsNaN(durationSeconds) ||
@@ -101,7 +104,7 @@ namespace EngineAnalyzer
                         tablePowerBins - 1);
 
                 tableCells[tempBin, powerBin]
-                    .Add(deviation, durationSeconds);
+                    .Add(engineSpeed, durationSeconds);
             }
 
 
@@ -119,17 +122,37 @@ namespace EngineAnalyzer
 
             foreach (var item in observationCache)
             {
-                double deviation =
-                    item.Key.IsLegacyDeviation
-                        ? Math.Abs(item.Key.SpeedOrDeviation)
-                        : Math.Abs(
-                            item.Key.SpeedOrDeviation -
+                double engineSpeed;
+                double deviation;
+
+                if (item.Key.IsLegacyDeviation)
+                {
+                    // A legacy deviation column is interpreted as the signed
+                    // difference n_i - n_nominal so that n_i can be restored
+                    // for the mean, standard deviation and COV.
+                    engineSpeed =
+                        nominalRpm +
+                        item.Key.SpeedOrDeviation;
+
+                    deviation =
+                        Math.Abs(item.Key.SpeedOrDeviation);
+                }
+                else
+                {
+                    engineSpeed =
+                        item.Key.SpeedOrDeviation;
+
+                    deviation =
+                        Math.Abs(
+                            engineSpeed -
                             nominalRpm);
+                }
 
 
                 ProcessWeightedPoint(
                     item.Key.Temperature,
                     item.Key.Power,
+                    engineSpeed,
                     deviation,
                     item.Value.DurationSeconds,
                     item.Value.IntervalCount);
@@ -310,7 +333,8 @@ namespace EngineAnalyzer
 
             MatrixDescriptionTextBlock.Text =
                 $"Строки — {xAxisTitle}; столбцы — {yAxisTitle}; " +
-                "ячейки — коэффициент вариации COV = σ / μ × 100%. " +
+                "ячейки — COV мгновенных оборотов: σ / μ × 100%; " +
+                "μ и σ учитывают длительность Δt каждого состояния. " +
                 "Пустая ячейка означает отсутствие данных.";
         }
 
