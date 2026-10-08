@@ -1,0 +1,506 @@
+﻿<Window x:Class="EngineAnalyzer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        Title="Engine Stability Analyzer"
+        Height="950"
+        Width="1650"
+        MinHeight="700"
+        MinWidth="1100"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ===================================================== -->
+        <!-- НАСТРОЙКИ -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                BorderBrush="Gray"
+                BorderThickness="1"
+                CornerRadius="5"
+                Padding="8"
+                Margin="0,0,0,8">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Источники -->
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Margin="0,0,0,8">
+
+                    <Button x:Name="OpenCsvButton"
+                            Content="Открыть CSV-файлы"
+                            Width="150"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="OpenCsv_Click"/>
+
+                    <Button x:Name="PostgresButton"
+                            Content="Из PostgreSQL"
+                            Width="130"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="LoadPostgres_Click"/>
+
+                    <Button Content="Проверить PostgreSQL"
+                            Width="165"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="TestPostgres_Click"/>
+
+                    <Button Content="Сбросить вид"
+                            Width="110"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="ResetView_Click"/>
+
+                    <Button x:Name="UpdateButton"
+                            Content="Обновить"
+                            Width="110"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            ToolTip="Применить параметры; при смене сигналов перечитать последний источник"
+                            Click="Update_Click"/>
+
+                    <Button Content="Печать таблицы / PDF"
+                            Width="165"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="PrintPdf_Click"/>
+
+                    <Button Content="Печать графика / PDF"
+                            Width="165"
+                            Height="32"
+                            Margin="0,0,8,0"
+                            Click="PrintGraph_Click"/>
+
+                    <Button Content="Выгрузить в Excel"
+                            Width="150"
+                            Height="32"
+                            Click="ExportExcel_Click"/>
+
+                </StackPanel>
+
+                <GroupBox Grid.Row="1"
+                          Header="Сигналы и названия осей"
+                          Margin="0,0,0,8"
+                          Padding="5">
+
+                    <WrapPanel>
+                        <TextBlock Text="CSV Date:"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox x:Name="CsvDateColumnComboBox"
+                                  Width="110"
+                                  Margin="3"
+                                  IsEditable="True"
+                                  Text="Date"/>
+
+                        <TextBlock Text="Ось X:"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox x:Name="CsvXColumnComboBox"
+                                  Width="130"
+                                  Margin="3"
+                                  IsEditable="True"
+                                  Text="IntTempOut"
+                                  SelectionChanged="CsvXColumn_SelectionChanged"/>
+
+                        <TextBlock Text="Ось Y:"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox x:Name="CsvYColumnComboBox"
+                                  Width="115"
+                                  Margin="3"
+                                  IsEditable="True"
+                                  Text="Power"
+                                  SelectionChanged="CsvYColumn_SelectionChanged"/>
+
+                        <TextBlock Text="RPM / отклонение:"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox x:Name="CsvMetricColumnComboBox"
+                                  Width="145"
+                                  Margin="3"
+                                  IsEditable="True"
+                                  Text="Engine Speed"
+                                  SelectionChanged="CsvMetricColumn_SelectionChanged"/>
+
+                        <CheckBox x:Name="CsvMetricIsDeviationCheckBox"
+                                  Content="готовое отклонение"
+                                  VerticalAlignment="Center"
+                                  Margin="5,0,12,0"/>
+
+                        <TextBlock Text="Название X:"
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="XAxisTitleTextBox"
+                                 Text="IntTempOut, °C"
+                                 Width="125"
+                                 Margin="3"/>
+
+                        <TextBlock Text="Название Y:"
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="YAxisTitleTextBox"
+                                 Text="Power, kW"
+                                 Width="110"
+                                 Margin="3,3,12,3"/>
+
+                        <TextBlock Text="PostgreSQL ID X:"
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="PgXTagIdTextBox"
+                                 Text="569"
+                                 Width="50"
+                                 Margin="3"/>
+
+                        <TextBlock Text="ID Y:"
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="PgYTagIdTextBox"
+                                 Text="558"
+                                 Width="50"
+                                 Margin="3"/>
+
+                        <TextBlock Text="ID RPM/откл.:"
+                                   VerticalAlignment="Center"/>
+                        <TextBox x:Name="PgSpeedTagIdTextBox"
+                                 Text="625"
+                                 Width="50"
+                                 Margin="3"/>
+
+                        <CheckBox x:Name="PgMetricIsDeviationCheckBox"
+                                  Content="ID содержит готовое отклонение"
+                                  VerticalAlignment="Center"
+                                  Margin="5,0,0,0"/>
+                    </WrapPanel>
+
+                </GroupBox>
+
+                <!-- Параметры -->
+                <WrapPanel Grid.Row="2">
+
+                    <GroupBox Header="График: диапазон и шаг"
+                              Margin="0,0,10,0"
+                              Padding="5">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="X min:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphTempMinTextBox"
+                                     Text="0"
+                                     Width="45"
+                                     Margin="3"/>
+
+                            <TextBlock Text="X max:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphTempMaxTextBox"
+                                     Text="100"
+                                     Width="45"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Шаг X:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphTempStepTextBox"
+                                     Text="1"
+                                     Width="45"
+                                     Margin="3,3,10,3"/>
+
+                            <TextBlock Text="Y min:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphPowerMinTextBox"
+                                     Text="0"
+                                     Width="55"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Y max:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphPowerMaxTextBox"
+                                     Text="1000"
+                                     Width="55"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Шаг Y:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="GraphPowerStepTextBox"
+                                     Text="10"
+                                     Width="50"
+                                     Margin="3"/>
+                        </StackPanel>
+
+                    </GroupBox>
+
+
+                    <GroupBox Header="Таблица: диапазон и шаг"
+                              Margin="0,0,10,0"
+                              Padding="5">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="X min:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TableTempMinTextBox"
+                                     Text="0"
+                                     Width="45"
+                                     Margin="3"/>
+
+                            <TextBlock Text="X max:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TableTempMaxTextBox"
+                                     Text="100"
+                                     Width="45"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Шаг X:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TableTempStepTextBox"
+                                     Text="1"
+                                     Width="45"
+                                     Margin="3,3,10,3"/>
+
+                            <TextBlock Text="Y min:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TablePowerMinTextBox"
+                                     Text="0"
+                                     Width="55"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Y max:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TablePowerMaxTextBox"
+                                     Text="1000"
+                                     Width="55"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Шаг Y:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="TablePowerStepTextBox"
+                                     Text="10"
+                                     Width="50"
+                                     Margin="3"/>
+                        </StackPanel>
+
+                    </GroupBox>
+
+
+                    <!-- Анализ -->
+                    <GroupBox Header="Анализ"
+                              Margin="0,0,10,0"
+                              Padding="5">
+
+                        <StackPanel Orientation="Horizontal">
+
+                            <TextBlock Text="Номинал RPM:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="NominalRpmTextBox"
+                                     Text="1500"
+                                     Width="60"
+                                     Margin="4"/>
+
+                            <TextBlock Text="Max отклонение RPM:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="MaxDeviationTextBox"
+                                     Text="1000"
+                                     Width="60"
+                                     Margin="4"/>
+
+                        </StackPanel>
+
+                    </GroupBox>
+
+
+                    <!-- PostgreSQL -->
+                    <GroupBox Header="PostgreSQL"
+                              Padding="5">
+
+                        <WrapPanel>
+
+                            <TextBlock Text="Host:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="PgHostTextBox"
+                                     Text="localhost"
+                                     Width="100"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Port:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="PgPortTextBox"
+                                     Text="5432"
+                                     Width="50"
+                                     Margin="3"/>
+
+                            <TextBlock Text="DB:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="PgDatabaseTextBox"
+                                     Width="90"
+                                     Margin="3"/>
+
+                            <TextBlock Text="User:"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="PgUserTextBox"
+                                     Width="80"
+                                     Margin="3"/>
+
+                            <TextBlock Text="Password:"
+                                       VerticalAlignment="Center"/>
+
+                            <PasswordBox x:Name="PgPasswordBox"
+                                         Width="90"
+                                         Margin="3"/>
+
+                            <TextBlock Text="От:"
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"/>
+
+                            <TextBox x:Name="PgFromTextBox"
+                                     Text="2026-07-23 00:00:00"
+                                     Width="145"
+                                     Margin="3"/>
+
+                            <TextBlock Text="До (не включая):"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="PgToTextBox"
+                                     Text="2026-07-25 23:59:59"
+                                     Width="145"
+                                     Margin="3"/>
+
+                        </WrapPanel>
+
+                    </GroupBox>
+
+                </WrapPanel>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- ГРАФИК И ТАБЛИЦА НА РАЗНЫХ ВКЛАДКАХ -->
+        <!-- ===================================================== -->
+
+        <TabControl Grid.Row="1">
+
+            <TabItem Header="3D-график">
+
+                <oxy:PlotView x:Name="Plot"
+                              Margin="8"
+                              PreviewMouseMove="Plot_MouseMove"
+                              PreviewMouseLeftButtonDown="Plot_MouseLeftButtonDown"
+                              PreviewMouseLeftButtonUp="Plot_MouseLeftButtonUp"
+                              PreviewMouseWheel="Plot_MouseWheel"/>
+
+            </TabItem>
+
+            <TabItem Header="Матрица RMS">
+
+                <Border BorderBrush="Gray"
+                        BorderThickness="1"
+                        CornerRadius="5"
+                        Margin="8"
+                        Padding="8">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="Матрица RMS отклонения"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Margin="0,0,0,5"/>
+
+                    <TextBlock x:Name="MatrixDescriptionTextBlock"
+                               Grid.Row="1"
+                               Text="Строки — наружная температура, столбцы — мощность, ячейки — взвешенный по времени RMS(|Engine Speed − Nominal RPM|). Пустая ячейка означает отсутствие данных."
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,8"/>
+
+                    <DataGrid x:Name="SurfaceMatrixGrid"
+                              Grid.Row="2"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserReorderColumns="False"
+                              FrozenColumnCount="1"
+                              EnableColumnVirtualization="True"
+                              EnableRowVirtualization="True"
+                              HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Auto"/>
+
+                </Grid>
+
+                </Border>
+
+            </TabItem>
+
+        </TabControl>
+
+
+        <!-- ===================================================== -->
+        <!-- STATUS -->
+        <!-- ===================================================== -->
+
+        <Grid Grid.Row="2"
+              Margin="0,8,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="250"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    BorderBrush="Gray"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="6"
+                    Margin="0,0,8,0">
+
+                <TextBlock x:Name="StatusText"
+                           Text="Готово"
+                           VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <ProgressBar x:Name="Progress"
+                         Grid.Column="1"
+                         Minimum="0"
+                         Maximum="100"
+                         Height="24"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>
