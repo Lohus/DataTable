@@ -418,7 +418,7 @@
 
             </TabItem>
 
-            <TabItem Header="Матрица RMS">
+            <TabItem Header="Матрица COV">
 
                 <Border BorderBrush="Gray"
                         BorderThickness="1"
@@ -434,14 +434,14 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Матрица RMS отклонения"
+                    <TextBlock Text="Матрица коэффициента вариации COV, %"
                                FontSize="18"
                                FontWeight="Bold"
                                Margin="0,0,0,5"/>
 
                     <TextBlock x:Name="MatrixDescriptionTextBlock"
                                Grid.Row="1"
-                               Text="Строки — наружная температура, столбцы — мощность, ячейки — взвешенный по времени RMS(|Engine Speed − Nominal RPM|). Пустая ячейка означает отсутствие данных."
+                               Text="Строки — ось X, столбцы — ось Y, ячейки — COV = σ / μ × 100% для отклонения оборотов. Пустая ячейка означает отсутствие данных."
                                TextWrapping="Wrap"
                                Margin="0,0,0,8"/>
 

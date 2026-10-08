@@ -163,7 +163,7 @@ namespace EngineAnalyzer
                     $"Матрица выгружена: {dialog.FileName}";
 
                 MessageBox.Show(
-                    "Матрица RMS успешно выгружена в Excel.",
+                    "Матрица COV успешно выгружена в Excel.",
                     "Экспорт в Excel",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
@@ -305,7 +305,7 @@ namespace EngineAnalyzer
                     writer.WriteAttributeString("xmlns", "r", null, relNs);
                     writer.WriteStartElement("sheets", ns);
                     writer.WriteStartElement("sheet", ns);
-                    writer.WriteAttributeString("name", "RMS Matrix");
+                    writer.WriteAttributeString("name", "COV Matrix");
                     writer.WriteAttributeString("sheetId", "1");
                     writer.WriteAttributeString("r", "id", relNs, "rId1");
                     writer.WriteEndElement();
@@ -666,13 +666,14 @@ namespace EngineAnalyzer
                             if (tableCells[t, p].TotalWeightSeconds <= 0)
                                 continue;
 
-                            double rms =
-                                tableCells[t, p].Rms;
+                            double cov =
+                                tableCells[t, p]
+                                    .CoefficientOfVariationPercent;
 
                             int heatIndex =
                                 (int)Math.Round(
                                     Math.Clamp(
-                                        rms /
+                                        cov /
                                         RedDeviationThreshold,
                                         0,
                                         1) *
@@ -682,7 +683,7 @@ namespace EngineAnalyzer
                                 writer,
                                 ns,
                                 $"{GetExcelColumnName(p + 2)}{rowNumber}",
-                                rms,
+                                cov,
                                 heatIndex + 2);
                         }
 
@@ -827,7 +828,7 @@ namespace EngineAnalyzer
                 Paragraph title =
                     new Paragraph(
                         new Run(
-                            "Матрица RMS отклонения оборотов"))
+                            "Матрица коэффициента вариации COV, %"))
                     {
                         FontSize = 16,
                         FontWeight = System.Windows.FontWeights.Bold,
@@ -872,7 +873,7 @@ namespace EngineAnalyzer
                         document.Blocks.Add(
                             new Paragraph(
                                 new Run(
-                                    "Матрица RMS (продолжение)"))
+                                    "Матрица COV (продолжение)"))
                             {
                                 FontWeight = System.Windows.FontWeights.Bold,
                                 BreakPageBefore = true
@@ -965,7 +966,9 @@ namespace EngineAnalyzer
                                 row,
                                 tableCells[t, p].TotalWeightSeconds <= 0
                                     ? "—"
-                                    : tableCells[t, p].Rms.ToString(
+                                    : tableCells[t, p]
+                                        .CoefficientOfVariationPercent
+                                        .ToString(
                                         "F3",
                                         CultureInfo.CurrentCulture));
                         }

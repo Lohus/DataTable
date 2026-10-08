@@ -26,8 +26,8 @@ namespace EngineAnalyzer
         private const double RedDeviationThreshold = 12;
         private const int ExcelHeatStyleSteps = 24;
 
-        private static readonly RmsColorConverter rmsColorConverter =
-            new RmsColorConverter();
+        private static readonly CovColorConverter covColorConverter =
+            new CovColorConverter();
 
         private int graphTempBins;
         private int graphPowerBins;
@@ -123,7 +123,7 @@ namespace EngineAnalyzer
             PostgreSql
         }
 
-        private sealed class RmsColorConverter : IValueConverter
+        private sealed class CovColorConverter : IValueConverter
         {
             public object Convert(
                 object value,
@@ -137,13 +137,13 @@ namespace EngineAnalyzer
                         value.ToString(),
                         NumberStyles.Float,
                         CultureInfo.CurrentCulture,
-                        out double rms))
+                        out double cov))
                 {
                     return Brushes.Transparent;
                 }
 
                 (byte r, byte g, byte b) =
-                    GetPastelRgb(rms);
+                    GetPastelRgb(cov);
 
                 SolidColorBrush brush =
                     new SolidColorBrush(

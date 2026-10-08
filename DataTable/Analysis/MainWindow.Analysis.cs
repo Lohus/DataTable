@@ -239,7 +239,7 @@ namespace EngineAnalyzer
 
 
         // ============================================================
-        // RMS MATRIX
+        // COV MATRIX
         // ============================================================
 
         private void BuildSurfaceMatrix()
@@ -272,7 +272,7 @@ namespace EngineAnalyzer
                         DataGridCell.BackgroundProperty,
                         new Binding($"[{columnName}]")
                         {
-                            Converter = rmsColorConverter
+                            Converter = covColorConverter
                         }));
 
                 SurfaceMatrixGrid.Columns.Add(
@@ -299,7 +299,8 @@ namespace EngineAnalyzer
                     row[p + 1] =
                         tableCells[t, p].TotalWeightSeconds <= 0
                             ? DBNull.Value
-                            : tableCells[t, p].Rms;
+                            : tableCells[t, p]
+                                .CoefficientOfVariationPercent;
                 }
 
                 table.Rows.Add(row);
@@ -309,8 +310,7 @@ namespace EngineAnalyzer
 
             MatrixDescriptionTextBlock.Text =
                 $"Строки — {xAxisTitle}; столбцы — {yAxisTitle}; " +
-                "ячейки — взвешенный по времени " +
-                "RMS(|Engine Speed − Nominal RPM|). " +
+                "ячейки — коэффициент вариации COV = σ / μ × 100%. " +
                 "Пустая ячейка означает отсутствие данных.";
         }
 

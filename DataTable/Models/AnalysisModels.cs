@@ -116,6 +116,53 @@ namespace EngineAnalyzer
                 : Math.Sqrt(
                     WeightedSumSquares /
                     TotalWeightSeconds);
+
+
+        public double StandardDeviation
+        {
+            get
+            {
+                if (TotalWeightSeconds <= 0)
+                    return double.NaN;
+
+                double mean = Mean;
+
+                double variance =
+                    WeightedSumSquares /
+                    TotalWeightSeconds -
+                    mean * mean;
+
+                return Math.Sqrt(
+                    Math.Max(0, variance));
+            }
+        }
+
+
+        public double CoefficientOfVariationPercent
+        {
+            get
+            {
+                if (TotalWeightSeconds <= 0)
+                    return double.NaN;
+
+                double mean = Mean;
+                double standardDeviation =
+                    StandardDeviation;
+
+                // For a perfectly stable zero-deviation cell both μ and σ
+                // are zero. Treat it as 0% variation for display purposes.
+                if (Math.Abs(mean) < 1e-12)
+                {
+                    return standardDeviation < 1e-12
+                        ? 0
+                        : double.NaN;
+                }
+
+                return standardDeviation /
+                       mean *
+                       100.0;
+            }
+        }
     }
 
 
