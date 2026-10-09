@@ -26,9 +26,7 @@ namespace EngineAnalyzer
         private const double RedDeviationThreshold = 0.8;
         private const int ExcelHeatStyleSteps = 24;
 
-        private static readonly CovColorConverter covColorConverter =
-            new CovColorConverter();
-
+        private static readonly CovColorConverter covColorConverter = new CovColorConverter();
         private int graphTempBins;
         private int graphPowerBins;
         private int tableTempBins;
@@ -38,55 +36,32 @@ namespace EngineAnalyzer
         // ============================================================
         // ДАННЫЕ
         // ============================================================
-
-        private AggregateCell[,] graphCells =
-            new AggregateCell[1, 1];
-
-        private AggregateCell[,] tableCells =
-            new AggregateCell[1, 1];
-
-        private double[,] surface =
-            new double[1, 1];
-
-        private bool[,] surfaceValid =
-            new bool[1, 1];
-
+        private AggregateCell[,] graphCells = new AggregateCell[1, 1];
+        private AggregateCell[,] tableCells = new AggregateCell[1, 1];
+        private double[,] surface = new double[1, 1];
+        private bool[,] surfaceValid = new bool[1, 1];
         private double deviationMax = 1;
-
         private long totalRows;
         private long acceptedRows;
         private long rejectedRows;
         private long sourceRows;
         private double weightedSeconds;
-
         private long uncachedRejectedIntervals;
-
-        private readonly Dictionary<ObservationKey, CachedObservation>
-            observationCache =
-                new Dictionary<ObservationKey, CachedObservation>();
-
+        private readonly Dictionary<ObservationKey, CachedObservation> observationCache = new Dictionary<ObservationKey, CachedObservation>();
         private string lastSource = "";
-
-        private string[] lastCsvFiles =
-            Array.Empty<string>();
-
+        private string[] lastCsvFiles =  Array.Empty<string>();
         private string loadedCsvMappingSignature = "";
-
         private string loadedPostgresMappingSignature = "";
-
-        private SourceKind lastSourceKind =
-            SourceKind.None;
-
-        private string xAxisTitle = "IntTempOut, °C";
-        private string yAxisTitle = "Power, kW";
+        private SourceKind lastSourceKind = SourceKind.None;
+        private string xAxisTitle = "X-asix title";
+        private string yAxisTitle = "Y-axis title";
 
         private int pgXTagId = 1280;
         private int pgYTagId = 558;
         private int pgSpeedTagId = 625;
         private bool pgMetricIsDeviation;
 
-        private readonly PlotModel plotModel =
-            new PlotModel();
+        private readonly PlotModel plotModel = new PlotModel();
 
         // Child-view aliases keep feature code independent from XAML namescopes.
         private Button OpenCsvButton => ControlPanel.OpenCsvButton;
@@ -204,11 +179,7 @@ namespace EngineAnalyzer
                 return brush;
             }
 
-            public object ConvertBack(
-                object value,
-                Type targetType,
-                object parameter,
-                CultureInfo culture)
+            public object ConvertBack( object value, Type targetType, object parameter, CultureInfo culture)
             {
                 throw new NotSupportedException();
             }
@@ -218,15 +189,11 @@ namespace EngineAnalyzer
         // ============================================================
         // КАМЕРА
         // ============================================================
-
         private double angleX = 25;
         private double angleY = -35;
         private double zoom = 1;
-
         private bool isDragging;
-
         private System.Windows.Point lastMousePosition;
-
 
         // ============================================================
         // CONSTRUCTOR
@@ -235,11 +202,8 @@ namespace EngineAnalyzer
         public MainWindow()
         {
             InitializeComponent();
-
             WireUiEvents();
-
             SetupPlot();
-
             ConfigureGrid();
         }
 
@@ -255,12 +219,9 @@ namespace EngineAnalyzer
             ControlPanel.PrintGraphButton.Click += PrintGraph_Click;
             ControlPanel.ExportExcelButton.Click += ExportExcel_Click;
 
-            CsvXColumnComboBox.SelectionChanged +=
-                CsvXColumn_SelectionChanged;
-            CsvYColumnComboBox.SelectionChanged +=
-                CsvYColumn_SelectionChanged;
-            CsvMetricColumnComboBox.SelectionChanged +=
-                CsvMetricColumn_SelectionChanged;
+            CsvXColumnComboBox.SelectionChanged += CsvXColumn_SelectionChanged;
+            CsvYColumnComboBox.SelectionChanged += CsvYColumn_SelectionChanged;
+            CsvMetricColumnComboBox.SelectionChanged += CsvMetricColumn_SelectionChanged;
 
             Plot.PreviewMouseMove += Plot_MouseMove;
             Plot.PreviewMouseLeftButtonDown += Plot_MouseLeftButtonDown;
