@@ -1,371 +1,149 @@
-<UserControl x:Class="EngineAnalyzer.Views.Controls.ControlPanelView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-<Border
-                BorderBrush="Gray"
-                BorderThickness="1"
-                CornerRadius="5"
-                Padding="8"
-                Margin="0,0,0,8">
-
-            <Grid>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <!-- Источники -->
-                <StackPanel Grid.Row="0"
-                            Orientation="Horizontal"
-                            Margin="0,0,0,8">
-
-                    <Button x:Name="OpenCsvButton" x:FieldModifier="public"
-                            Content="Открыть CSV-файлы"
-                            Width="150"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="PostgresButton" x:FieldModifier="public"
-                            Content="Из PostgreSQL"
-                            Width="130"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="TestPostgresButton" x:FieldModifier="public" Content="Проверить PostgreSQL"
-                            Width="165"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="ResetViewButton" x:FieldModifier="public" Content="Сбросить вид"
-                            Width="110"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="UpdateButton" x:FieldModifier="public"
-                            Content="Обновить"
-                            Width="110"
-                            Height="32"
-                            Margin="0,0,8,0"
-                            ToolTip="Применить параметры; при смене сигналов перечитать последний источник"/>
-
-                    <Button x:Name="PrintTableButton" x:FieldModifier="public" Content="Печать таблицы / PDF"
-                            Width="165"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="PrintGraphButton" x:FieldModifier="public" Content="Печать графика / PDF"
-                            Width="165"
-                            Height="32"
-                            Margin="0,0,8,0"/>
-
-                    <Button x:Name="ExportExcelButton" x:FieldModifier="public" Content="Выгрузить в Excel"
-                            Width="150"
-                            Height="32"/>
-
-                </StackPanel>
-
-                <GroupBox Grid.Row="1"
-                          Header="Сигналы и названия осей"
-                          Margin="0,0,0,8"
-                          Padding="5">
-
-                    <WrapPanel>
-                        <TextBlock Text="CSV Date:"
-                                   VerticalAlignment="Center"/>
-                        <ComboBox x:Name="CsvDateColumnComboBox" x:FieldModifier="public"
-                                  Width="110"
-                                  Margin="3"
-                                  IsEditable="True"
-                                  Text="Date"/>
-
-                        <TextBlock Text="Ось X:"
-                                   VerticalAlignment="Center"/>
-                        <ComboBox x:Name="CsvXColumnComboBox" x:FieldModifier="public"
-                                  Width="130"
-                                  Margin="3"
-                                  IsEditable="True"
-                                  Text="IntTempOut"/>
-
-                        <TextBlock Text="Ось Y:"
-                                   VerticalAlignment="Center"/>
-                        <ComboBox x:Name="CsvYColumnComboBox" x:FieldModifier="public"
-                                  Width="115"
-                                  Margin="3"
-                                  IsEditable="True"
-                                  Text="Power"/>
-
-                        <TextBlock Text="RPM / отклонение:"
-                                   VerticalAlignment="Center"/>
-                        <ComboBox x:Name="CsvMetricColumnComboBox" x:FieldModifier="public"
-                                  Width="145"
-                                  Margin="3"
-                                  IsEditable="True"
-                                  Text="Engine Speed"/>
-
-                        <CheckBox x:Name="CsvMetricIsDeviationCheckBox" x:FieldModifier="public"
-                                  Content="готовое отклонение"
-                                  VerticalAlignment="Center"
-                                  Margin="5,0,12,0"/>
-
-                        <TextBlock Text="Название X:"
-                                   VerticalAlignment="Center"/>
-                        <TextBox x:Name="XAxisTitleTextBox" x:FieldModifier="public"
-                                 Text="IntTempOut, °C"
-                                 Width="125"
-                                 Margin="3"/>
-
-                        <TextBlock Text="Название Y:"
-                                   VerticalAlignment="Center"/>
-                        <TextBox x:Name="YAxisTitleTextBox" x:FieldModifier="public"
-                                 Text="Power, kW"
-                                 Width="110"
-                                 Margin="3,3,12,3"/>
-
-                        <TextBlock Text="PostgreSQL ID X:"
-                                   VerticalAlignment="Center"/>
-                        <TextBox x:Name="PgXTagIdTextBox" x:FieldModifier="public"
-                                 Text="569"
-                                 Width="50"
-                                 Margin="3"/>
-
-                        <TextBlock Text="ID Y:"
-                                   VerticalAlignment="Center"/>
-                        <TextBox x:Name="PgYTagIdTextBox" x:FieldModifier="public"
-                                 Text="558"
-                                 Width="50"
-                                 Margin="3"/>
-
-                        <TextBlock Text="ID RPM/откл.:"
-                                   VerticalAlignment="Center"/>
-                        <TextBox x:Name="PgSpeedTagIdTextBox" x:FieldModifier="public"
-                                 Text="625"
-                                 Width="50"
-                                 Margin="3"/>
-
-                        <CheckBox x:Name="PgMetricIsDeviationCheckBox" x:FieldModifier="public"
-                                  Content="ID содержит готовое отклонение"
-                                  VerticalAlignment="Center"
-                                  Margin="5,0,0,0"/>
-                    </WrapPanel>
-
-                </GroupBox>
-
-                <!-- Параметры -->
-                <WrapPanel Grid.Row="2">
-
-                    <GroupBox Header="График: диапазон и шаг"
-                              Margin="0,0,10,0"
-                              Padding="5">
-
-                        <StackPanel Orientation="Horizontal">
-
-                            <TextBlock Text="X min:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphTempMinTextBox" x:FieldModifier="public"
-                                     Text="0"
-                                     Width="45"
-                                     Margin="3"/>
-
-                            <TextBlock Text="X max:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphTempMaxTextBox" x:FieldModifier="public"
-                                     Text="100"
-                                     Width="45"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Шаг X:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphTempStepTextBox" x:FieldModifier="public"
-                                     Text="1"
-                                     Width="45"
-                                     Margin="3,3,10,3"/>
-
-                            <TextBlock Text="Y min:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphPowerMinTextBox" x:FieldModifier="public"
-                                     Text="0"
-                                     Width="55"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Y max:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphPowerMaxTextBox" x:FieldModifier="public"
-                                     Text="1000"
-                                     Width="55"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Шаг Y:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="GraphPowerStepTextBox" x:FieldModifier="public"
-                                     Text="10"
-                                     Width="50"
-                                     Margin="3"/>
-                        </StackPanel>
-
-                    </GroupBox>
-
-
-                    <GroupBox Header="Таблица: диапазон и шаг"
-                              Margin="0,0,10,0"
-                              Padding="5">
-
-                        <StackPanel Orientation="Horizontal">
-
-                            <TextBlock Text="X min:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TableTempMinTextBox" x:FieldModifier="public"
-                                     Text="0"
-                                     Width="45"
-                                     Margin="3"/>
-
-                            <TextBlock Text="X max:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TableTempMaxTextBox" x:FieldModifier="public"
-                                     Text="100"
-                                     Width="45"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Шаг X:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TableTempStepTextBox" x:FieldModifier="public"
-                                     Text="1"
-                                     Width="45"
-                                     Margin="3,3,10,3"/>
-
-                            <TextBlock Text="Y min:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TablePowerMinTextBox" x:FieldModifier="public"
-                                     Text="0"
-                                     Width="55"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Y max:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TablePowerMaxTextBox" x:FieldModifier="public"
-                                     Text="1000"
-                                     Width="55"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Шаг Y:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="TablePowerStepTextBox" x:FieldModifier="public"
-                                     Text="10"
-                                     Width="50"
-                                     Margin="3"/>
-                        </StackPanel>
-
-                    </GroupBox>
-
-
-                    <!-- Анализ -->
-                    <GroupBox Header="Анализ"
-                              Margin="0,0,10,0"
-                              Padding="5">
-
-                        <StackPanel Orientation="Horizontal">
-
-                            <TextBlock Text="Номинал RPM:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="NominalRpmTextBox" x:FieldModifier="public"
-                                     Text="1500"
-                                     Width="60"
-                                     Margin="4"/>
-
-                            <TextBlock Text="Max отклонение RPM:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="MaxDeviationTextBox" x:FieldModifier="public"
-                                     Text="1000"
-                                     Width="60"
-                                     Margin="4"/>
-
-                        </StackPanel>
-
-                    </GroupBox>
-
-
-                    <!-- PostgreSQL -->
-                    <GroupBox Header="PostgreSQL"
-                              Padding="5">
-
-                        <WrapPanel>
-
-                            <TextBlock Text="Host:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="PgHostTextBox" x:FieldModifier="public"
-                                     Text="localhost"
-                                     Width="100"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Port:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="PgPortTextBox" x:FieldModifier="public"
-                                     Text="5432"
-                                     Width="50"
-                                     Margin="3"/>
-
-                            <TextBlock Text="DB:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="PgDatabaseTextBox" x:FieldModifier="public"
-                                     Width="90"
-                                     Margin="3"/>
-
-                            <TextBlock Text="User:"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="PgUserTextBox" x:FieldModifier="public"
-                                     Width="80"
-                                     Margin="3"/>
-
-                            <TextBlock Text="Password:"
-                                       VerticalAlignment="Center"/>
-
-                            <PasswordBox x:Name="PgPasswordBox" x:FieldModifier="public"
-                                         Width="90"
-                                         Margin="3"/>
-
-                            <TextBlock Text="От:"
-                                       VerticalAlignment="Center"
-                                       Margin="8,0,0,0"/>
-
-                            <TextBox x:Name="PgFromTextBox" x:FieldModifier="public"
-                                     Text="2026-07-23 00:00:00"
-                                     Width="145"
-                                     Margin="3"/>
-
-                            <TextBlock Text="До (не включая):"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBox x:Name="PgToTextBox" x:FieldModifier="public"
-                                     Text="2026-07-25 23:59:59"
-                                     Width="145"
-                                     Margin="3"/>
-
-                        </WrapPanel>
-
-                    </GroupBox>
-
+﻿<UserControl x:Class="EngineAnalyzer.Views.Controls.ControlPanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Margin="0,0,0,8" Padding="8" BorderBrush="Gray" BorderThickness="1"
+            CornerRadius="5">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <!-- Источники -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,8" Orientation="Horizontal">
+                <Button x:Name="OpenCsvButton" Width="150" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Открыть CSV-файлы" />
+                <Button x:Name="PostgresButton" Width="130" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Из PostgreSQL" />
+                <Button x:Name="TestPostgresButton" Width="165" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Проверить PostgreSQL" />
+                <Button x:Name="ResetViewButton" Width="110" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Сбросить вид" />
+                <Button x:Name="UpdateButton" Width="110" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Обновить"
+                        ToolTip="Применить параметры; при смене сигналов перечитать последний источник" />
+                <Button x:Name="PrintTableButton" Width="165" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Печать таблицы / PDF" />
+                <Button x:Name="PrintGraphButton" Width="165" Height="32" Margin="0,0,8,0"
+                        x:FieldModifier="public" Content="Печать графика / PDF" />
+                <Button x:Name="ExportExcelButton" Width="150" Height="32" x:FieldModifier="public"
+                        Content="Выгрузить в Excel" />
+            </StackPanel>
+            <GroupBox Grid.Row="1" Margin="0,0,0,8" Padding="5" Header="Сигналы и названия осей">
+                <WrapPanel>
+                    <TextBlock VerticalAlignment="Center" Text="CSV Date:" />
+                    <ComboBox x:Name="CsvDateColumnComboBox" Width="110" Margin="3" x:FieldModifier="public"
+                              IsEditable="True" Text="Date" />
+                    <TextBlock VerticalAlignment="Center" Text="Ось X:" />
+                    <ComboBox x:Name="CsvXColumnComboBox" Width="130" Margin="3" x:FieldModifier="public"
+                              IsEditable="True" Text="IntTempOut" />
+                    <TextBlock VerticalAlignment="Center" Text="Ось Y:" />
+                    <ComboBox x:Name="CsvYColumnComboBox" Width="115" Margin="3" x:FieldModifier="public"
+                              IsEditable="True" Text="Power" />
+                    <TextBlock VerticalAlignment="Center" Text="RPM / отклонение:" />
+                    <ComboBox x:Name="CsvMetricColumnComboBox" Width="145" Margin="3" x:FieldModifier="public"
+                              IsEditable="True" Text="Engine Speed" />
+                    <CheckBox x:Name="CsvMetricIsDeviationCheckBox" Margin="5,0,12,0" VerticalAlignment="Center" x:FieldModifier="public"
+                              Content="готовое отклонение" />
+                    <TextBlock VerticalAlignment="Center" Text="Название X:" />
+                    <TextBox x:Name="XAxisTitleTextBox" Width="125" Margin="3" x:FieldModifier="public"
+                             Text="IntTempOut, °C" />
+                    <TextBlock VerticalAlignment="Center" Text="Название Y:" />
+                    <TextBox x:Name="YAxisTitleTextBox" Width="110" Margin="3,3,12,3" x:FieldModifier="public"
+                             Text="Power, kW" />
+                    <TextBlock VerticalAlignment="Center" Text="PostgreSQL ID X:" />
+                    <TextBox x:Name="PgXTagIdTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                             Text="569" />
+                    <TextBlock VerticalAlignment="Center" Text="ID Y:" />
+                    <TextBox x:Name="PgYTagIdTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                             Text="558" />
+                    <TextBlock VerticalAlignment="Center" Text="ID RPM/откл.:" />
+                    <TextBox x:Name="PgSpeedTagIdTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                             Text="625" />
+                    <CheckBox x:Name="PgMetricIsDeviationCheckBox" Margin="5,0,0,0" VerticalAlignment="Center" x:FieldModifier="public"
+                              Content="ID содержит готовое отклонение" />
                 </WrapPanel>
-
-            </Grid>
-
-        </Border>
+            </GroupBox>
+            <!-- Параметры -->
+            <WrapPanel Grid.Row="2">
+                <GroupBox Margin="0,0,10,0" Padding="5" Header="График: диапазон и шаг">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="X min:" />
+                        <TextBox x:Name="GraphTempMinTextBox" Width="45" Margin="3" x:FieldModifier="public"
+                                 Text="0" />
+                        <TextBlock VerticalAlignment="Center" Text="X max:" />
+                        <TextBox x:Name="GraphTempMaxTextBox" Width="45" Margin="3" x:FieldModifier="public"
+                                 Text="100" />
+                        <TextBlock VerticalAlignment="Center" Text="Шаг X:" />
+                        <TextBox x:Name="GraphTempStepTextBox" Width="45" Margin="3,3,10,3" x:FieldModifier="public"
+                                 Text="1" />
+                        <TextBlock VerticalAlignment="Center" Text="Y min:" />
+                        <TextBox x:Name="GraphPowerMinTextBox" Width="55" Margin="3" x:FieldModifier="public"
+                                 Text="0" />
+                        <TextBlock VerticalAlignment="Center" Text="Y max:" />
+                        <TextBox x:Name="GraphPowerMaxTextBox" Width="55" Margin="3" x:FieldModifier="public"
+                                 Text="1000" />
+                        <TextBlock VerticalAlignment="Center" Text="Шаг Y:" />
+                        <TextBox x:Name="GraphPowerStepTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                                 Text="10" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Margin="0,0,10,0" Padding="5" Header="Таблица: диапазон и шаг">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="X min:" />
+                        <TextBox x:Name="TableTempMinTextBox" Width="45" Margin="3" x:FieldModifier="public"
+                                 Text="0" />
+                        <TextBlock VerticalAlignment="Center" Text="X max:" />
+                        <TextBox x:Name="TableTempMaxTextBox" Width="45" Margin="3" x:FieldModifier="public"
+                                 Text="100" />
+                        <TextBlock VerticalAlignment="Center" Text="Шаг X:" />
+                        <TextBox x:Name="TableTempStepTextBox" Width="45" Margin="3,3,10,3" x:FieldModifier="public"
+                                 Text="1" />
+                        <TextBlock VerticalAlignment="Center" Text="Y min:" />
+                        <TextBox x:Name="TablePowerMinTextBox" Width="55" Margin="3" x:FieldModifier="public"
+                                 Text="0" />
+                        <TextBlock VerticalAlignment="Center" Text="Y max:" />
+                        <TextBox x:Name="TablePowerMaxTextBox" Width="55" Margin="3" x:FieldModifier="public"
+                                 Text="1000" />
+                        <TextBlock VerticalAlignment="Center" Text="Шаг Y:" />
+                        <TextBox x:Name="TablePowerStepTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                                 Text="10" />
+                    </StackPanel>
+                </GroupBox>
+                <!-- Анализ -->
+                <GroupBox Margin="0,0,10,0" Padding="5" Header="Анализ">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center" Text="Номинал RPM:" />
+                        <TextBox x:Name="NominalRpmTextBox" Width="60" Margin="4" x:FieldModifier="public"
+                                 Text="1500" />
+                        <TextBlock VerticalAlignment="Center" Text="Max отклонение RPM:" />
+                        <TextBox x:Name="MaxDeviationTextBox" Width="60" Margin="4" x:FieldModifier="public"
+                                 Text="1000" />
+                    </StackPanel>
+                </GroupBox>
+                <!-- PostgreSQL -->
+                <GroupBox Padding="5" Header="PostgreSQL">
+                    <WrapPanel>
+                        <TextBlock VerticalAlignment="Center" Text="Host:" />
+                        <TextBox x:Name="PgHostTextBox" Width="100" Margin="3" x:FieldModifier="public"
+                                 Text="localhost" />
+                        <TextBlock VerticalAlignment="Center" Text="Port:" />
+                        <TextBox x:Name="PgPortTextBox" Width="50" Margin="3" x:FieldModifier="public"
+                                 Text="5432" />
+                        <TextBlock VerticalAlignment="Center" Text="DB:" />
+                        <TextBox x:Name="PgDatabaseTextBox" Width="90" Margin="3" x:FieldModifier="public" />
+                        <TextBlock VerticalAlignment="Center" Text="User:" />
+                        <TextBox x:Name="PgUserTextBox" Width="80" Margin="3" x:FieldModifier="public" />
+                        <TextBlock VerticalAlignment="Center" Text="Password:" />
+                        <PasswordBox x:Name="PgPasswordBox" Width="90" Margin="3" x:FieldModifier="public" />
+                        <TextBlock Margin="8,0,0,0" VerticalAlignment="Center" Text="От:" />
+                        <TextBox x:Name="PgFromTextBox" Width="145" Margin="3" x:FieldModifier="public"
+                                 Text="2026-07-23 00:00:00" />
+                        <TextBlock VerticalAlignment="Center" Text="До (не включая):" />
+                        <TextBox x:Name="PgToTextBox" Width="145" Margin="3" x:FieldModifier="public"
+                                 Text="2026-07-25 23:59:59" />
+                    </WrapPanel>
+                </GroupBox>
+            </WrapPanel>
+        </Grid>
+    </Border>
 </UserControl>
